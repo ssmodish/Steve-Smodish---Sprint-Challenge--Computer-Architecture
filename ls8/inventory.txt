@@ -1,0 +1,34 @@
+examples/call.ls8
+examples/interrupts.ls8
+examples/keyboard.ls8
+examples/mult.ls8
+examples/print8.ls8
+examples/printstr.ls8
+examples/stack.ls8
+examples/stackoverflow.ls8
+
+the above look like they are programs that will run on our emulator when completed.
+
+cpu.c:
+    cpu_load: hard coded program for first day MVP
+    alu: ?
+    cpu_run: the main functional loop of the system
+    cpu_init: initialize a cpu struct
+
+cpu.h:
+    struct cpu: defines the cpu struct
+    enum alu_op: ?
+    defines global constants (commands)
+    defines shapes of functions in cpu.c
+
+ls8.c:
+    runs the ls8 emulator
+
+Makefile:
+    builds our program
+
+README.md:
+    Instructions for the project
+
+
+ls8 spec suggests `FL` is another register - not sure what this is yet

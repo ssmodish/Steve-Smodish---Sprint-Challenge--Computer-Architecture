@@ -1,0 +1,76 @@
+00 LOAD
+01 into R0
+02 the number 10
+03 LOAD
+04 into R1
+05 the number 20
+06 LOAD
+07 into R2
+08 the number 19
+09 COMPARE
+10 R0 to
+11 R1
+12 JUMP IF EQUAL
+13 to address in R2
+14 LOAD
+15 into R3
+16 the number 1
+17 PRINT
+18 the value in R3
+19 LOAD
+20 into R2
+21 the number 32
+22 COMPARE
+23 R0 to
+24 R1
+25 JUMP IF NOT EQUAL
+26 to address in R2
+27 LOAD
+28 into R3
+29 the number 2
+30 PRINT
+31 the value in R3
+32 LOAD
+33 into R1
+34 the number 10
+35 LOAD
+36 into R2
+37 the number 40
+38 COMPARE
+39 R0 to
+40 R1
+41 JUMP IF EQUAL
+42 to the address in R2
+43 LOAD
+44 into R3
+45 the number 3
+46 PRINT
+47 the value in R3
+48 LOAD
+49 into R2
+50 the number 61
+51 COMPARE
+52 R0 to
+53 R1
+54 JUMP IF NOT EQUAL
+55 to the address in R2
+56 LOAD
+57 into R3
+58 the number 4
+59 PRINT
+60 the value in R3
+61 LOAD
+62 into R3
+63 the number 5
+64 PRINT
+65 the value in R3
+66 LOAD
+67 into R2
+68 the number 73
+69 JUMP
+70 to the address in R2
+71 PRINT
+72 the value in R3
+73 HALT
+
+
