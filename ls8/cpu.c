@@ -5,8 +5,6 @@
 
 #define DATA_LEN 6
 
-
-
 unsigned char cpu_ram_read(struct cpu *cpu, unsigned char MAR)
 {
   return cpu->ram[MAR];
@@ -20,20 +18,21 @@ void cpu_ram_write(struct cpu *cpu, unsigned char MAR, unsigned char MDR)
 
 void trace(struct cpu *cpu)
 {
-    printf("%02X | ", cpu->PC);
+  printf("PC:%02X | ", cpu->PC);
 
-    printf("%02X %02X %02X |",
-        cpu_ram_read(cpu, cpu->PC),
-        cpu_ram_read(cpu, cpu->PC + 1),
-        cpu_ram_read(cpu, cpu->PC + 2));
+  printf("%02X %02X %02X |",
+         cpu_ram_read(cpu, cpu->PC),
+         cpu_ram_read(cpu, cpu->PC + 1),
+         cpu_ram_read(cpu, cpu->PC + 2));
 
-    for (int i = 0; i < 8; i++) {
-        printf(" %02X", cpu->registers[i]);
-    }
+  for (int i = 0; i < 8; i++)
+  {
+    printf("R[%d]:%02X | ", i, cpu->registers[i]);
+  }
 
-    printf("FL: %02X", cpu->FL);
+  printf("FL:%02X", cpu->FL);
 
-    printf("\n");
+  printf("\n");
 }
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
@@ -74,7 +73,7 @@ void cpu_load(struct cpu *cpu, int argc, char **argv)
 
     cpu->ram[address++] = val;
   }
-  fclose(fp);
+  // fclose(fp);
 }
 
 /**
@@ -94,7 +93,6 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
 
   case ALU_CMP:
     /* FL bits: 00000LGE */
-    trace(cpu);
     if (cpu->registers[regA] == cpu->registers[regB])
     {
       cpu->FL = 0b00000001;
@@ -103,10 +101,13 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
     {
       cpu->FL = 0b00000010;
     }
-    else if (cpu->registers[regA] > cpu->registers[regB])
+    else if (cpu->registers[regA] < cpu->registers[regB])
     {
       cpu->FL = 0b00000100;
     }
+    printf("ALU_CMP\n");
+    trace(cpu);
+
     break;
   }
 }
@@ -143,7 +144,6 @@ void cpu_run(struct cpu *cpu)
     case CMP:
       alu(cpu, ALU_CMP, operand0, operand1);
       cpu->PC += 3;
-      trace(cpu);
       break;
 
     case LDI:
@@ -185,11 +185,11 @@ void cpu_run(struct cpu *cpu)
 
     case JMP:
       cpu->PC = cpu->registers[cpu->PC + 1];
+      printf("JMP\n");
       trace(cpu);
       break;
 
     case JEQ:
-    trace(cpu);
       if (cpu->FL == 0b00000001)
       {
         cpu->PC = cpu->registers[cpu->PC + 1];
@@ -198,11 +198,11 @@ void cpu_run(struct cpu *cpu)
       {
         cpu->PC += 2;
       }
+      printf("JEQ\n");
       trace(cpu);
       break;
 
     case JNE:
-    trace(cpu);
       if (cpu->FL != 0b00000001)
       {
         cpu->PC = cpu->registers[cpu->PC + 1];
@@ -211,6 +211,8 @@ void cpu_run(struct cpu *cpu)
       {
         cpu->PC += 2;
       }
+      printf("JNE\n");
+
       trace(cpu);
       break;
 
