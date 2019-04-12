@@ -5,6 +5,8 @@
 
 #define DATA_LEN 6
 
+
+
 unsigned char cpu_ram_read(struct cpu *cpu, unsigned char MAR)
 {
   return cpu->ram[MAR];
@@ -16,6 +18,23 @@ void cpu_ram_write(struct cpu *cpu, unsigned char MAR, unsigned char MDR)
   return;
 }
 
+void trace(struct cpu *cpu)
+{
+    printf("%02X | ", cpu->PC);
+
+    printf("%02X %02X %02X |",
+        cpu_ram_read(cpu, cpu->PC),
+        cpu_ram_read(cpu, cpu->PC + 1),
+        cpu_ram_read(cpu, cpu->PC + 2));
+
+    for (int i = 0; i < 8; i++) {
+        printf(" %02X", cpu->registers[i]);
+    }
+
+    printf("FL: %02X", cpu->FL);
+
+    printf("\n");
+}
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
@@ -74,14 +93,17 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
     break;
 
   case ALU_CMP:
-  /* FL bits: 00000LGE */
-    if(cpu->registers[regA] == cpu->registers[regB])
+    /* FL bits: 00000LGE */
+    trace(cpu);
+    if (cpu->registers[regA] == cpu->registers[regB])
     {
       cpu->FL = 0b00000001;
-    } else if (cpu->registers[regA] > cpu->registers[regB])
+    }
+    else if (cpu->registers[regA] > cpu->registers[regB])
     {
       cpu->FL = 0b00000010;
-    } else if (cpu->registers[regA] > cpu->registers[regB])
+    }
+    else if (cpu->registers[regA] > cpu->registers[regB])
     {
       cpu->FL = 0b00000100;
     }
@@ -121,6 +143,7 @@ void cpu_run(struct cpu *cpu)
     case CMP:
       alu(cpu, ALU_CMP, operand0, operand1);
       cpu->PC += 3;
+      trace(cpu);
       break;
 
     case LDI:
@@ -162,22 +185,34 @@ void cpu_run(struct cpu *cpu)
 
     case JMP:
       cpu->PC = cpu->registers[cpu->PC + 1];
+      trace(cpu);
       break;
-    
+
     case JEQ:
-      if(cpu->FL == 0b00000001){
-              cpu->PC = cpu->registers[cpu->PC + 1];
+    trace(cpu);
+      if (cpu->FL == 0b00000001)
+      {
+        cpu->PC = cpu->registers[cpu->PC + 1];
       }
-      // cpu->PC += 2;
+      else
+      {
+        cpu->PC += 2;
+      }
+      trace(cpu);
       break;
 
     case JNE:
-      if(cpu->FL != 0b00000001){
-              cpu->PC = cpu->registers[cpu->PC + 1];
+    trace(cpu);
+      if (cpu->FL != 0b00000001)
+      {
+        cpu->PC = cpu->registers[cpu->PC + 1];
       }
-      // cpu->PC += 2;
+      else
+      {
+        cpu->PC += 2;
+      }
+      trace(cpu);
       break;
-
 
     default:
       printf("Unknown command 0x%02X at 0x%02X\n", IR, cpu->PC);

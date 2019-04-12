@@ -1,0 +1,27 @@
+LOAD
+into R0
+the number 10
+LOAD
+into R1
+the number 20
+LOAD
+into R2
+the number 19
+COMPARE
+R0 to
+R1
+JUMP IF EQUAL
+to address in R2
+LOAD
+into R3
+the number 1
+PRINT
+the value in R3
+LOAD
+into R2
+the number 24
+COMPARE
+R0 to
+R1
+JUMP IF NOT EQUAL
+to address in R2
