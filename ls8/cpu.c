@@ -18,19 +18,19 @@ void cpu_ram_write(struct cpu *cpu, unsigned char MAR, unsigned char MDR)
 
 void trace(struct cpu *cpu)
 {
-  printf("PC:%02X | ", cpu->PC);
+  printf("PC:%d | ", cpu->PC);
 
-  printf("%02X %02X %02X |",
+  printf("%d %d %d |",
          cpu_ram_read(cpu, cpu->PC),
          cpu_ram_read(cpu, cpu->PC + 1),
          cpu_ram_read(cpu, cpu->PC + 2));
 
   for (int i = 0; i < 8; i++)
   {
-    printf("R[%d]:%02X | ", i, cpu->registers[i]);
+    printf("R[%d]:%d | ", i, cpu->registers[i]);
   }
 
-  printf("FL:%02X", cpu->FL);
+  printf("FL:%d", cpu->FL);
 
   printf("\n");
 }
@@ -134,57 +134,77 @@ void cpu_run(struct cpu *cpu)
     case MUL:
       alu(cpu, ALU_MUL, operand0, operand1);
       cpu->PC += 3;
+      printf("MUL\n");
+      trace(cpu);
       break;
 
     case ADD:
       alu(cpu, ALU_ADD, operand0, operand1);
       cpu->PC += 3;
+      printf("ADD\n");
+      trace(cpu);
       break;
 
     case CMP:
       alu(cpu, ALU_CMP, operand0, operand1);
       cpu->PC += 3;
+      printf("CMP\n");
+      trace(cpu);
       break;
 
     case LDI:
       cpu->registers[operand0] = operand1;
       cpu->PC += 3;
+      printf("LDI\n");
+      trace(cpu);
       break;
 
     case PRN:
       printf("%d\n", cpu->registers[operand0]);
       cpu->PC += 2;
+      printf("PRN\n");
+      trace(cpu);
       break;
 
     case HLT:
       running = 0;
+      printf("HLT\n");
+      trace(cpu);
       break;
 
     case PUSH:
       cpu->registers[7] -= 1;
       cpu->ram[cpu->registers[7]] = cpu->registers[cpu->ram[cpu->PC + 1]];
       cpu->PC += 2;
+      printf("PUSH\n");
+      trace(cpu);
       break;
 
     case POP:
       cpu->registers[cpu->ram[cpu->PC + 1]] = cpu->ram[cpu->registers[7]];
       cpu->registers[7] += 1;
       cpu->PC += 2;
+      printf("POP\n");
+      trace(cpu);
       break;
 
     case CALL:
       cpu->registers[7]--;
       cpu->ram[cpu->registers[7]] = cpu->PC + 2;
       cpu->PC = cpu->registers[cpu->ram[cpu->PC + 1]];
+      printf("CALL\n");
+      trace(cpu);
       break;
 
     case RET:
       cpu->PC = cpu->ram[cpu->registers[7]];
       cpu->registers[7]++;
+      printf("RET\n");
+      trace(cpu);
       break;
 
     case JMP:
-      cpu->PC = cpu->registers[cpu->PC + 1];
+      cpu->PC = cpu->registers[operand0];
       printf("JMP\n");
       trace(cpu);
       break;
@@ -192,7 +212,7 @@ void cpu_run(struct cpu *cpu)
     case JEQ:
       if (cpu->FL == 0b00000001)
       {
-        cpu->PC = cpu->registers[cpu->PC + 1];
+        cpu->PC = cpu->registers[operand0];
       }
       else
       {
@@ -205,7 +225,7 @@ void cpu_run(struct cpu *cpu)
     case JNE:
       if (cpu->FL != 0b00000001)
       {
-        cpu->PC = cpu->registers[cpu->PC + 1];
+        cpu->PC = cpu->registers[operand0];
       }
       else
       {
